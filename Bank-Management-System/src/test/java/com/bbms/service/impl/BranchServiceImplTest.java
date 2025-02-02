@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -86,6 +87,13 @@ class BranchServiceImplTest {
     void findAllBranches() {
         List<Branch> allBranches = branchService.findAllBranches();
         assertEquals(branches, allBranches);
+    }
+
+    @Test
+    void findAllBranchesNotFound() {
+        Mockito.when(branchService.findAllBranches()).thenReturn(new ArrayList<>());
+        assertThrows(BranchNotFoundException.class,
+                ()-> branchService.findAllBranches());
     }
 
     @Test

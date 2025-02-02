@@ -6,9 +6,12 @@ import com.bbms.repositories.BankRepository;
 import com.bbms.repositories.BranchRepository;
 import com.bbms.service.impl.BranchServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -18,7 +21,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +45,12 @@ class BranchControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Mock
+    private BindingResult result;
+
+    @InjectMocks
+    private BranchController branchController;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -62,6 +74,22 @@ class BranchControllerTest {
                         .content(objectMapper.writeValueAsString(branchPersist)))
                 .andExpect(status().isCreated())
                 .andDo(print());
+    }
+
+    @Test
+    void saveBranchIfErrorInValidation() {
+//        BindingResult result = Mockito.mock(BindingResult.class);
+        List<ObjectError> errors = new ArrayList<>();
+        ObjectError error = new ObjectError("branch", "Branch name must not be empty");
+        errors.add(error);
+        when(result.hasErrors()).thenReturn(true);
+        when(result.getAllErrors()).thenReturn(errors);
+
+        when(branchController.saveBranch(branchPersist.get(),result))
+                .thenThrow(new ConstraintViolationException("Validation failed!",null,"Not Found!"));
+
+        assertThrows(ConstraintViolationException.class,
+                ()-> branchController.saveBranch(branchPersist.get(),result));
     }
 
     @Test
@@ -139,6 +167,21 @@ class BranchControllerTest {
                 .content(objectMapper.writeValueAsString(updatedBranch)))
                 .andExpect(status().isCreated())
                 .andDo(print());
+    }
+
+    @Test
+    void updateBranchIfErrorInValidation() {
+        List<ObjectError> errors = new ArrayList<>();
+        ObjectError error = new ObjectError("branch", "Invalid branch updates!");
+        errors.add(error);
+        when(result.hasErrors()).thenReturn(true);
+        when(result.getAllErrors()).thenReturn(errors);
+
+        when(branchController.updateBranchById(id,branchPersist.get(),result))
+                .thenThrow(new ConstraintViolationException("Validation failed!",null,"Not Found!"));
+
+        assertThrows(ConstraintViolationException.class,
+                ()-> branchController.updateBranchById(id, branchPersist.get(),result));
     }
 
     @Test

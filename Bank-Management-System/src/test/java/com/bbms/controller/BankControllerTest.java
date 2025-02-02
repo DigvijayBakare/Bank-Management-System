@@ -3,13 +3,18 @@ package com.bbms.controller;
 import com.bbms.entities.Bank;
 import com.bbms.service.impl.BankServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -18,10 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,6 +34,12 @@ class BankControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Mock
+    private BindingResult result;
+
+    @InjectMocks
+    private BankController bankController;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -53,6 +61,21 @@ class BankControllerTest {
     }
 
     @Test
+    void saveBankIfErrorInValidation() {
+        List<ObjectError> errors = new ArrayList<>();
+        ObjectError error = new ObjectError("bank", "Bank name must not be null");
+        errors.add(error);
+        when(result.hasErrors()).thenReturn(true);
+        when(result.getAllErrors()).thenReturn(errors);
+
+        when(bankController.saveBank(bank.get(),result))
+                .thenThrow(new ConstraintViolationException("Validation failed!",null,"Not Found!"));
+
+        assertThrows(ConstraintViolationException.class,
+                ()-> bankController.saveBank(bank.get(),result));
+    }
+
+    @Test
     void getAllBanks() throws Exception {
         List<Bank> listBank = Arrays.asList(
                 new Bank(1L, "Bank1", new Date(), "1236547890", "bank1@gmail.com", true, null),
@@ -64,6 +87,21 @@ class BankControllerTest {
                 .andExpect(status().isFound())
                 .andExpect(jsonPath("$.size()").value(listBank.size()))
                 .andDo(print());
+    }
+
+    @Test
+    void getAllBanksIfErrorInValidation() {
+        List<ObjectError> errors = new ArrayList<>();
+        ObjectError error = new ObjectError("bank", "No banks found!");
+        errors.add(error);
+        when(result.hasErrors()).thenReturn(true);
+        when(result.getAllErrors()).thenReturn(errors);
+
+        when(bankController.getAllBanks())
+                .thenThrow(new ConstraintViolationException("Validation failed!",null,"Not Found!"));
+
+        assertThrows(ConstraintViolationException.class,
+                ()-> bankController.getAllBanks());
     }
 
     @Test
@@ -109,6 +147,21 @@ class BankControllerTest {
                         .content(objectMapper.writeValueAsString(updatedBank)))
                 .andExpect(status().isOk())
                 .andDo(print());
+    }
+
+    @Test
+    void updateBankIfErrorInValidation() {
+        List<ObjectError> errors = new ArrayList<>();
+        ObjectError error = new ObjectError("bank", "Error occurred while updating!");
+        errors.add(error);
+        when(result.hasErrors()).thenReturn(true);
+        when(result.getAllErrors()).thenReturn(errors);
+
+        when(bankController.updateBank(id,bank.get(),result))
+                .thenThrow(new ConstraintViolationException("Validation failed!",null,"Not Found!"));
+
+        assertThrows(ConstraintViolationException.class,
+                ()-> bankController.updateBank(id,bank.get(),result));
     }
 
     @Test

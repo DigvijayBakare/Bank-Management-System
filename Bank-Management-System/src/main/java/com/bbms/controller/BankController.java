@@ -31,7 +31,7 @@ public class BankController {
         }
         Bank saveBank = this.bankService.saveBank(bank);
         log.info("successfully created bank object: {}" , saveBank);
-        return ResponseEntity.status(HttpStatus.CREATED).body("a new bank created successfully:" + saveBank);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saveBank);
     }
     // get all branch
     @GetMapping("/get/bank")

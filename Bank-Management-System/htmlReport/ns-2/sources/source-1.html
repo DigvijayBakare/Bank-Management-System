@@ -1,0 +1,199 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BankController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bbms.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: BankController (com.bbms.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BankController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (5/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.1%
+  </span>
+  <span class="absValue">
+    (27/29)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bbms.controller;
+&nbsp;
+&nbsp;import com.bbms.entities.Bank;
+&nbsp;import com.bbms.service.BankService;
+&nbsp;import com.bbms.service.impl.BankServiceImpl;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.validation.BindingResult;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/bank&quot;)
+<b class="fc">&nbsp;public class BankController {</b>
+<b class="fc">&nbsp;    private static Logger log = LoggerFactory.getLogger(BankController.class);</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private BankServiceImpl bankService;
+&nbsp;
+&nbsp;    // handler method to save the new bank
+&nbsp;    @PostMapping(&quot;/add/bank&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; saveBank(@Valid @RequestBody Bank bank, BindingResult result) {
+<b class="fc">&nbsp;        if (result.hasErrors()) {</b>
+<b class="fc">&nbsp;            log.error(&quot;error while saving bank details: {}&quot;, result.getAllErrors());</b>
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(&quot;Error Occurred while saving the bank details!\n&quot;+result.getAllErrors());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Bank saveBank = this.bankService.saveBank(bank);</b>
+<b class="fc">&nbsp;        log.info(&quot;successfully created bank object: {}&quot; , saveBank);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(saveBank);</b>
+&nbsp;    }
+&nbsp;    // get all branch
+&nbsp;    @GetMapping(&quot;/get/bank&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; getAllBanks(){
+<b class="fc">&nbsp;        List&lt;Bank&gt; allBanks = this.bankService.findAllBanks();</b>
+<b class="pc">&nbsp;        if(allBanks.isEmpty()) {</b>
+<b class="nc">&nbsp;            log.debug(&quot;No bank details found!&quot;);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(&quot;No bank details are present!&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        log.info(&quot;all bank details has been successfully fetched!&quot;);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.FOUND).body(allBanks);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // get single branch by id
+&nbsp;    @GetMapping(&quot;/get/bank/id/{bankId}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; getSingleBank(@PathVariable(&quot;bankId&quot;)Long bankId) {
+<b class="fc">&nbsp;        Bank bank = this.bankService.findBankById(bankId);</b>
+<b class="fc">&nbsp;        log.info(&quot;bank with id: {} is found and returned!!&quot;, bankId);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.FOUND).body(bank);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // get single branch by name
+&nbsp;    @GetMapping(&quot;/get/bank/{bankName}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; getSingleBank(@PathVariable(&quot;bankName&quot;)String bankName) {
+<b class="fc">&nbsp;        Bank bank = this.bankService.findBankByName(bankName);</b>
+<b class="fc">&nbsp;        log.info(&quot;bank with id: {} is found and returned!!&quot;, bankName);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.FOUND).body(bank);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // update a bank using bank id
+&nbsp;    @PutMapping(&quot;/update/bank/{bankId}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; updateBank(@PathVariable(&quot;bankId&quot;)long bankId, @Valid @RequestBody Bank bank, BindingResult result){
+<b class="fc">&nbsp;        if (result.hasErrors()) {</b>
+<b class="fc">&nbsp;            log.error(&quot;an error occurred while updating a bank details&quot;);</b>
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result.getAllErrors());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        this.bankService.updateBank(bankId,bank);</b>
+<b class="fc">&nbsp;        log.info(&quot;bank details successfully updated!&quot;);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok().body(&quot;bank with id: &quot; +  bankId + &quot; updated successfully!&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // delete a bank using bank id
+&nbsp;    @DeleteMapping(&quot;/delete/bank/{bankId}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; deleteBank(@PathVariable(&quot;bankId&quot;)Long bankId) {
+<b class="fc">&nbsp;        this.bankService.deleteBank(bankId);</b>
+<b class="fc">&nbsp;        log.info(&quot;bank with id: {} deleted successfully&quot;, bankId);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(&quot;Bank deleted successfully!&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-02 20:08</div>
+</div>
+</body>
+</html>

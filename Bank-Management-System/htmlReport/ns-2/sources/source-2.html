@@ -1,0 +1,201 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BranchController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bbms.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: BranchController (com.bbms.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BranchController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (26/26)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bbms.controller;
+&nbsp;
+&nbsp;import com.bbms.custom_exception.BranchNotFoundException;
+&nbsp;import com.bbms.entities.Branch;
+&nbsp;import com.bbms.service.impl.BranchServiceImpl;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.validation.BindingResult;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/branch&quot;)
+<b class="fc">&nbsp;public class BranchController {</b>
+<b class="fc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(BranchController.class);</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private BranchServiceImpl branchServiceImp;
+&nbsp;
+&nbsp;    // handler method for saving the new branch
+&nbsp;    @PostMapping(&quot;/add/branch&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; saveBranch(@Valid @RequestBody Branch branch, BindingResult bindingResult) {
+&nbsp;        // check for validations if not satisfied
+<b class="fc">&nbsp;        if(bindingResult.hasErrors()){</b>
+<b class="fc">&nbsp;            logger.warn(&quot;errors while saving the branch: {}&quot;, bindingResult.getAllErrors());</b>
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Branch saveBranch = this.branchServiceImp.saveBranch(branch);</b>
+<b class="fc">&nbsp;        logger.info(&quot;branch added successfully: {}&quot;,saveBranch);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(&quot;new branch created successfully\n&quot; + saveBranch);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // get branch by id
+&nbsp;    @GetMapping(&quot;/get/branch-id/{branchId}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; getBranchById(@PathVariable(&quot;branchId&quot;) Long branchId) {
+<b class="fc">&nbsp;        Branch branchById = this.branchServiceImp.findBranchById(branchId);</b>
+&nbsp;
+<b class="fc">&nbsp;        logger.info(&quot;Fetched branch: {}&quot;, branchById);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(branchById);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    // get branch by name
+&nbsp;    @GetMapping(&quot;/get/branch/{name}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; getBranchByName(@Valid @PathVariable(&quot;name&quot;) String branchName) {
+<b class="fc">&nbsp;        Branch branchByName = this.branchServiceImp.findBranchByName(branchName);</b>
+<b class="fc">&nbsp;        logger.info(&quot;Fetched branch: {}&quot;, branchByName);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(branchByName);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // get all branch
+&nbsp;    @GetMapping(&quot;/get&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; getAllBranches() {
+<b class="fc">&nbsp;        List&lt;Branch&gt; allBranches = this.branchServiceImp.findAllBranches();</b>
+<b class="fc">&nbsp;        logger.info(&quot;fetched all branches successfully: {}&quot;, allBranches);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.FOUND).body(allBranches);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // update branch
+&nbsp;    @PutMapping(&quot;/update/branch/{branchId}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; updateBranchById(@Valid @PathVariable(&quot;branchId&quot;)Long branchId, @RequestBody Branch branch,BindingResult bindingResult) {
+&nbsp;
+<b class="fc">&nbsp;        if(bindingResult.hasErrors()){</b>
+<b class="fc">&nbsp;            logger.warn(&quot;errors while updating the branch: {}&quot;, bindingResult.getAllErrors());</b>
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(&quot;please enter valid data .\nErrors while saving branch:\n&quot;+bindingResult.getAllErrors());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Branch branch1 = this.branchServiceImp.updateBranch(branch, branchId);</b>
+<b class="fc">&nbsp;        logger.info(&quot;branch updated successfully.{}&quot;,branch1);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(branch1);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // handler for delete the branch.
+&nbsp;    @DeleteMapping(&quot;/delete/branch/{branchId}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; deleteBranch(@PathVariable(&quot;branchId&quot;) Long branchId) {
+<b class="fc">&nbsp;        this.branchServiceImp.deleteBranch(branchId);</b>
+<b class="fc">&nbsp;        logger.info(&quot;branch with id: {} deleted successfully!&quot;, branchId);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(&quot;branch with id &quot; + branchId + &quot; is deleted successfully!&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-02 20:08</div>
+</div>
+</body>
+</html>

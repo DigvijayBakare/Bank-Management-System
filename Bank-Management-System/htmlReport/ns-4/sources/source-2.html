@@ -1,0 +1,286 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Branch</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bbms.entities</a>
+</div>
+
+<h1>Coverage Summary for Class: Branch (com.bbms.entities)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Branch</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (25/25)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (36/36)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Branch$HibernateInstantiator$d2d5B4jx</td>
+  </tr>
+  <tr>
+    <td class="name">Branch$HibernateInstantiator$S4s5kip4</td>
+  </tr>
+  <tr>
+    <td class="name">Branch$HibernateProxy$jWcBpsk4</td>
+  </tr>
+  <tr>
+    <td class="name">Branch$HibernateProxy$WZbJ2iik</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (25/25)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (36/36)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bbms.entities;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonBackReference;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import jakarta.validation.constraints.*;
+&nbsp;
+&nbsp;@Entity
+&nbsp;public class Branch {
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long branchId;
+&nbsp;
+&nbsp;    @NotNull(message = &quot;Branch name can not be null!&quot;)
+&nbsp;    @NotEmpty(message = &quot;Branch name can not be null!&quot;)
+&nbsp;    private String branchName;
+&nbsp;
+&nbsp;    @Size(min = 11, max = 11, message = &quot;IFSC code must of 11 digits!&quot;)
+&nbsp;    @NotNull(message = &quot;IFSC code must not be null.&quot;)
+&nbsp;    private String ifscCode;
+&nbsp;
+&nbsp;    @ManyToOne
+&nbsp;    @JoinColumn(name = &quot;bankId&quot;)
+&nbsp;    @JsonBackReference
+&nbsp;    private Bank bank;
+&nbsp;
+&nbsp;    private String branchAddress1;
+&nbsp;
+&nbsp;    private String branchAddress2;
+&nbsp;
+&nbsp;    private String branchCity;
+&nbsp;
+&nbsp;    @Size(min = 9, max = 9, message = &quot;MICR must be of length 9!&quot;)
+&nbsp;    private String branch_MICR;
+&nbsp;
+&nbsp;    private Long branchContact;
+&nbsp;
+&nbsp;    @Email(message = &quot;Must be a email!&quot;)
+&nbsp;    private String branchEmail;
+&nbsp;
+&nbsp;    private Long branchZip;
+&nbsp;
+<b class="fc">&nbsp;    public Branch() {</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public Branch(Long branchId, String branchName, String IFSC_Code, Bank bank, String branchAddress1, String branchAddress2, String branchCity, String branch_MICR, Long branchContact, String branchEmail, Long branchZip) {</b>
+<b class="fc">&nbsp;        this.branchId = branchId;</b>
+<b class="fc">&nbsp;        this.branchName = branchName;</b>
+<b class="fc">&nbsp;        this.ifscCode=IFSC_Code;</b>
+<b class="fc">&nbsp;        this.bank = bank;</b>
+<b class="fc">&nbsp;        this.branchAddress1 = branchAddress1;</b>
+<b class="fc">&nbsp;        this.branchAddress2 = branchAddress2;</b>
+<b class="fc">&nbsp;        this.branchCity = branchCity;</b>
+<b class="fc">&nbsp;        this.branch_MICR = branch_MICR;</b>
+<b class="fc">&nbsp;        this.branchContact = branchContact;</b>
+<b class="fc">&nbsp;        this.branchEmail = branchEmail;</b>
+<b class="fc">&nbsp;        this.branchZip = branchZip;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Long getBranchId() {
+<b class="fc">&nbsp;        return branchId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBranchId(Long branchId) {
+<b class="fc">&nbsp;        this.branchId = branchId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getBranchName() {
+<b class="fc">&nbsp;        return branchName;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBranchName(String branchName) {
+<b class="fc">&nbsp;        this.branchName = branchName;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public @Size(min = 11, max = 11, message = &quot;IFSC code must of 11 digits!&quot;) @NotNull(message = &quot;IFSC code must not be null.&quot;) String getIfscCode() {
+<b class="fc">&nbsp;        return ifscCode;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setIfscCode(@Size(min = 11, max = 11, message = &quot;IFSC code must of 11 digits!&quot;) @NotNull(message = &quot;IFSC code must not be null.&quot;) String ifscCode) {
+<b class="fc">&nbsp;        this.ifscCode = ifscCode;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Bank getBank() {
+<b class="fc">&nbsp;        return bank;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBank(Bank bank) {
+<b class="fc">&nbsp;        this.bank = bank;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getBranchAddress1() {
+<b class="fc">&nbsp;        return branchAddress1;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBranchAddress1(String branchAddress1) {
+<b class="fc">&nbsp;        this.branchAddress1 = branchAddress1;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getBranchAddress2() {
+<b class="fc">&nbsp;        return branchAddress2;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBranchAddress2(String branchAddress2) {
+<b class="fc">&nbsp;        this.branchAddress2 = branchAddress2;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getBranchCity() {
+<b class="fc">&nbsp;        return branchCity;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBranchCity(String branchCity) {
+<b class="fc">&nbsp;        this.branchCity = branchCity;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getBranch_MICR() {
+<b class="fc">&nbsp;        return branch_MICR;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBranch_MICR(String branch_MICR) {
+<b class="fc">&nbsp;        this.branch_MICR = branch_MICR;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Long getBranchContact() {
+<b class="fc">&nbsp;        return branchContact;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBranchContact(Long branchContact) {
+<b class="fc">&nbsp;        this.branchContact = branchContact;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getBranchEmail() {
+<b class="fc">&nbsp;        return branchEmail;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBranchEmail(String branchEmail) {
+<b class="fc">&nbsp;        this.branchEmail = branchEmail;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Long getBranchZip() {
+<b class="fc">&nbsp;        return branchZip;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBranchZip(Long branchZip) {
+<b class="fc">&nbsp;        this.branchZip = branchZip;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="fc">&nbsp;        return &quot;Branch {&quot; +</b>
+&nbsp;                &quot;branchId=&quot; + branchId +
+&nbsp;                &quot;, branchName=&#39;&quot; + branchName + &#39;\&#39;&#39; +
+&nbsp;                &quot;, IFSC_Code=&#39;&quot; + ifscCode + &#39;\&#39;&#39; +
+&nbsp;                &quot;, bank=&quot; + bank +
+&nbsp;                &quot;, branchAddress1=&#39;&quot; + branchAddress1 + &#39;\&#39;&#39; +
+&nbsp;                &quot;, branchAddress2=&#39;&quot; + branchAddress2 + &#39;\&#39;&#39; +
+&nbsp;                &quot;, branchCity=&#39;&quot; + branchCity + &#39;\&#39;&#39; +
+&nbsp;                &quot;, branch_MICR=&#39;&quot; + branch_MICR + &#39;\&#39;&#39; +
+&nbsp;                &quot;, branchContact=&quot; + branchContact +
+&nbsp;                &quot;, branchEmail=&#39;&quot; + branchEmail + &#39;\&#39;&#39; +
+&nbsp;                &quot;, branchZip=&quot; + branchZip +
+&nbsp;                &#39;}&#39;;
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-02 20:08</div>
+</div>
+</body>
+</html>

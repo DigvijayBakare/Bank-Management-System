@@ -25,11 +25,11 @@ public class BranchController {
 
     // handler method for saving the new branch
     @PostMapping("/add/branch")
-    public ResponseEntity<String> saveBranch(@Valid @RequestBody Branch branch, BindingResult bindingResult) {
+    public ResponseEntity<?> saveBranch(@Valid @RequestBody Branch branch, BindingResult bindingResult) {
         // check for validations if not satisfied
         if(bindingResult.hasErrors()){
             logger.warn("errors while saving the branch: {}", bindingResult.getAllErrors());
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("please enter valid data .\nErrors while saving branch:\n"+bindingResult.getAllErrors());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         }
         Branch saveBranch = this.branchServiceImp.saveBranch(branch);
         logger.info("branch added successfully: {}",saveBranch);
@@ -39,19 +39,11 @@ public class BranchController {
     // get branch by id
     @GetMapping("/get/branch-id/{branchId}")
     public ResponseEntity<?> getBranchById(@PathVariable("branchId") Long branchId) {
-        /*Branch branchById = this.branchServiceImp.findBranchById(branchId);
+        Branch branchById = this.branchServiceImp.findBranchById(branchId);
 
         logger.info("Fetched branch: {}", branchById);
-        return ResponseEntity.ok(branchById);*/
+        return ResponseEntity.ok(branchById);
 
-        try {
-            Branch branchById = this.branchServiceImp.findBranchById(branchId);
-            logger.info("Fetched branch: {}", branchById);
-            return ResponseEntity.ok(branchById);
-        } catch (BranchNotFoundException ex) {
-            logger.error("Error fetching branch: {}", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
     }
 
     // get branch by name
@@ -72,15 +64,15 @@ public class BranchController {
 
     // update branch
     @PutMapping("/update/branch/{branchId}")
-    public ResponseEntity<String> updateBranchById(@Valid @PathVariable("branchId")Long branchId, @RequestBody Branch branch,BindingResult bindingResult) {
+    public ResponseEntity<?> updateBranchById(@Valid @PathVariable("branchId")Long branchId, @RequestBody Branch branch,BindingResult bindingResult) {
 
         if(bindingResult.hasErrors()){
             logger.warn("errors while updating the branch: {}", bindingResult.getAllErrors());
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("please enter valid data .\nErrors while saving branch:\n"+bindingResult.getAllErrors());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("please enter valid data .\nErrors while saving branch:\n"+bindingResult.getAllErrors());
         }
         Branch branch1 = this.branchServiceImp.updateBranch(branch, branchId);
         logger.info("branch updated successfully.{}",branch1);
-        return ResponseEntity.status(HttpStatus.CREATED).body("branch with id: " + branchId + " updated successfully!"+branch1);
+        return ResponseEntity.status(HttpStatus.CREATED).body(branch1);
     }
 
     // handler for delete the branch.
