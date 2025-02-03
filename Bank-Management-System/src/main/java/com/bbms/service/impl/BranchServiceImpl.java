@@ -7,6 +7,8 @@ import com.bbms.service.BranchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,10 +18,13 @@ import java.util.List;
 import java.util.Optional;
 
 
+
 @Service
 public class BranchServiceImpl implements BranchService {
-
     private static final Logger logger = LoggerFactory.getLogger(BranchServiceImpl.class);
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Autowired
     private BranchRepository branchRepository;
@@ -37,9 +42,11 @@ public class BranchServiceImpl implements BranchService {
     @Override
     public Branch findBranchById(Long branchId) {
         return this.branchRepository.findById(branchId)
-                .orElseThrow(() -> new BranchNotFoundException("Branch with id " + branchId + " does not exists!"));
-
+                .orElseThrow(() -> new BranchNotFoundException(
+                        messageSource.getMessage("ge.handleBranchNotFoundException",
+                                new Object[]{branchId}, LocaleContextHolder.getLocale())));
     }
+
 
     @Override
     public Branch findBranchByName(String branchName) {

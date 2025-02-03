@@ -22,14 +22,13 @@ class ExceptionHandlerHelperTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        exceptionHandlerHelper = new ExceptionHandlerHelper(); // Instantiate your exception handler
+        exceptionHandlerHelper = new ExceptionHandlerHelper(); // Instantiate exception handler
     }
 
     @Test
     void handleConstraintViolationException() {
         // Create a mock ConstraintViolation
         ConstraintViolation<?> violation = Mockito.mock(ConstraintViolation.class);
-//        Mockito.when(violation.getRootBeanClass()).thenReturn(Object.class);
         Mockito.doReturn(Object.class).when(violation).getRootBeanClass();
         Mockito.when(violation.getMessage()).thenReturn("must not be null");
 
@@ -76,6 +75,6 @@ class ExceptionHandlerHelperTest {
 
         // Assert the response
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        assertEquals("Branch is not found in records!!\n" + errorMessage, responseEntity.getBody());
+        assertEquals(errorMessage, responseEntity.getBody());
     }
 }

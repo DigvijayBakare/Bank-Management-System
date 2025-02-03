@@ -40,7 +40,7 @@ public class ExceptionHandlerHelper {
     @ExceptionHandler(value = BranchNotFoundException.class)
     public ResponseEntity<String> handleBranchNotFoundException(BranchNotFoundException bnf){
         logger.error("branch is not present in the record!!!");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Branch is not found in records!!\n" + bnf.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(bnf.getMessage());
     }
 }
 

@@ -1,7 +1,6 @@
 package com.bbms.controller;
 
 import com.bbms.entities.Bank;
-import com.bbms.service.BankService;
 import com.bbms.service.impl.BankServiceImpl;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

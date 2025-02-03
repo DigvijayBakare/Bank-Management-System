@@ -1,8 +1,6 @@
 package com.bbms.controller;
 
-import com.bbms.custom_exception.BranchNotFoundException;
 import com.bbms.entities.Branch;
-import com.bbms.service.impl.BankServiceImpl;
 import com.bbms.service.impl.BranchServiceImpl;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -11,13 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/branch")
@@ -26,9 +21,6 @@ public class BranchController {
 
     @Autowired
     private BranchServiceImpl branchServiceImp;
-
-//    @Autowired
-//    private BankServiceImpl bankService;
 
     // handler method for saving the new branch
     @PostMapping("/add/branch")
@@ -47,7 +39,6 @@ public class BranchController {
     @GetMapping("/get/branch-id/{branchId}")
     public ResponseEntity<?> getBranchById(@PathVariable("branchId") Long branchId) {
         Branch branchById = this.branchServiceImp.findBranchById(branchId);
-
         logger.info("Fetched branch: {}", branchById);
         return ResponseEntity.ok(branchById);
 

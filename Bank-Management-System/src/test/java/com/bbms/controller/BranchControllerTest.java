@@ -1,23 +1,14 @@
 package com.bbms.controller;
 
-import com.bbms.entities.Bank;
 import com.bbms.entities.Branch;
-import com.bbms.repositories.BankRepository;
-import com.bbms.repositories.BranchRepository;
 import com.bbms.service.impl.BranchServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.exception.ConstraintViolationException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -54,9 +45,6 @@ class BranchControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-//    @Mock
-//    private BranchRepository branchRepository;
 
     Long id = 1L;
     String name = "Branch1";
@@ -95,7 +83,6 @@ class BranchControllerTest {
     @Test
     void getBranchById() throws Exception {
         when(branchService.findBranchById(id)).thenReturn(branchPersist.get());
-
         mockMvc.perform(get("/api/branch/get/branch-id/{branchId}", id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.branchId").value(id))
@@ -107,17 +94,6 @@ class BranchControllerTest {
                     System.out.println(result.getResponse().getContentAsString());
                 });
     }
-
-   /* @Test
-    void getBranchByIdNotFound() throws Exception {
-        Long id1 = 10L;
-        Optional<Branch> optionalBranch = Optional.empty();
-//        when(branchService.findBranchById(id1)).thenReturn(optionalBranch.get());
-        when(branchRepository.findById(id1)).thenReturn(optionalBranch);
-        mockMvc.perform(get("/api/branch/get/branch-id/{branchId}", id1))
-                .andExpect(status().isNotFound())
-                .andDo(print());
-    }*/
 
     @Test
     void getBranchByName() throws Exception {
@@ -159,6 +135,7 @@ class BranchControllerTest {
                 "Address1", "Address2", "City1", "MICR1Micr",
                 9586741230L, "branch2@gmail.com", 458521L);
 
+//        when(branchService.findBranchById(id,"lang")).thenReturn(branchPersist.get());
         when(branchService.findBranchById(id)).thenReturn(branchPersist.get());
         when(branchService.updateBranch(updatedBranch,id)).thenReturn(oldBranch);
 
