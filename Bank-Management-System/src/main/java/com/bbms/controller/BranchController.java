@@ -2,16 +2,20 @@ package com.bbms.controller;
 
 import com.bbms.custom_exception.BranchNotFoundException;
 import com.bbms.entities.Branch;
+import com.bbms.service.impl.BankServiceImpl;
 import com.bbms.service.impl.BranchServiceImpl;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +26,9 @@ public class BranchController {
 
     @Autowired
     private BranchServiceImpl branchServiceImp;
+
+//    @Autowired
+//    private BankServiceImpl bankService;
 
     // handler method for saving the new branch
     @PostMapping("/add/branch")
@@ -60,6 +67,20 @@ public class BranchController {
         List<Branch> allBranches = this.branchServiceImp.findAllBranches();
         logger.info("fetched all branches successfully: {}", allBranches);
         return ResponseEntity.status(HttpStatus.FOUND).body(allBranches);
+    }
+
+    // get all branch according to the pagination
+    @GetMapping("/get/page/{pageNo}")
+    public ResponseEntity<?> getAllBranchesUsingPages(@PathVariable("pageNo") int pageNo) {
+        Page<Branch> pageBranches = this.branchServiceImp.findAllBranchesUsingPages(pageNo);
+
+        if (pageBranches.isEmpty()){
+            logger.info("No data found on the given page!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Data does not exists on the given page no!");
+        }
+
+        logger.info("fetched branches on the given page successfully: {}", pageBranches);
+        return ResponseEntity.status(HttpStatus.FOUND).body(pageBranches);
     }
 
     // update branch

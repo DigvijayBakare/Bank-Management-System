@@ -56,26 +56,26 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    88.9%
   </span>
   <span class="absValue">
-    (8/8)
+    (8/9)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    83.3%
+    62.5%
   </span>
   <span class="absValue">
-    (5/6)
+    (5/8)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    93.1%
+    77.1%
   </span>
   <span class="absValue">
-    (27/29)
+    (27/35)
   </span>
 </td>
 </tr>
@@ -96,6 +96,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import org.slf4j.Logger;
 &nbsp;import org.slf4j.LoggerFactory;
 &nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.domain.Page;
 &nbsp;import org.springframework.http.HttpStatus;
 &nbsp;import org.springframework.http.ResponseEntity;
 &nbsp;import org.springframework.validation.BindingResult;
@@ -132,6 +133,20 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;        }
 <b class="fc">&nbsp;        log.info(&quot;all bank details has been successfully fetched!&quot;);</b>
 <b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.FOUND).body(allBanks);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // get all banks with pages only
+&nbsp;    @GetMapping(&quot;/get/bank/page/{pageNo}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; getAllBanksPages(@PathVariable(&quot;pageNo&quot;) int pageNo){
+<b class="nc">&nbsp;        Page&lt;Bank&gt; banks = this.bankService.findAllBanksPage(pageNo);</b>
+&nbsp;
+<b class="nc">&nbsp;        if(banks.isEmpty()) {</b>
+<b class="nc">&nbsp;            log.debug(&quot;No bank details found!&quot;);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(&quot;No bank details are present!&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        log.info(&quot;all bank details has been successfully fetched!&quot;);</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.FOUND).body(banks);</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    // get single branch by id
@@ -193,7 +208,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-02 20:08</div>
+    <div style="float:right;">generated on 2025-02-03 10:55</div>
 </div>
 </body>
 </html>

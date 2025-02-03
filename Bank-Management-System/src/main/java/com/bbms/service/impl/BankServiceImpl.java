@@ -6,6 +6,9 @@ import com.bbms.repositories.BankRepository;
 import com.bbms.service.BankService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +32,13 @@ public class BankServiceImpl implements BankService {
     public Bank findBankByName(String bankName) {
         return bankRepository.findBankByBankName(bankName)
                 .orElseThrow(() -> new BankNotFoundException("Bank with name " + bankName + " does not exists!"));
+    }
+
+    @Override
+    public Page<Bank> findAllBanksPage(int page) {
+        // pagination implementation - per page 10(n) banks and current page 0(page) - start page no is 0
+        Pageable pageable = PageRequest.of(page, 10);
+        return this.bankRepository.findAll(pageable);
     }
 
     @Override

@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -43,6 +44,20 @@ public class BankController {
         }
         log.info("all bank details has been successfully fetched!");
         return ResponseEntity.status(HttpStatus.FOUND).body(allBanks);
+    }
+
+    // get all banks with pages only
+    @GetMapping("/get/bank/page/{pageNo}")
+    public ResponseEntity<?> getAllBanksPages(@PathVariable("pageNo") int pageNo){
+        Page<Bank> banks = this.bankService.findAllBanksPage(pageNo);
+
+        if(banks.isEmpty()) {
+            log.debug("No bank details found!");
+            return ResponseEntity.ok("No bank details are present on given page number!");
+        }
+
+        log.info("all bank details has been successfully fetched!");
+        return ResponseEntity.status(HttpStatus.FOUND).body(banks);
     }
 
     // get single branch by id

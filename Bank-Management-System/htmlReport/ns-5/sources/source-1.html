@@ -52,18 +52,18 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    88.9%
   </span>
   <span class="absValue">
-    (8/8)
+    (8/9)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    91.3%
   </span>
   <span class="absValue">
-    (21/21)
+    (21/23)
   </span>
 </td>
 </tr>
@@ -83,6 +83,9 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import com.bbms.service.BankService;
 &nbsp;import jakarta.validation.Valid;
 &nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.PageRequest;
+&nbsp;import org.springframework.data.domain.Pageable;
 &nbsp;import org.springframework.stereotype.Service;
 &nbsp;
 &nbsp;import java.util.List;
@@ -106,6 +109,13 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    public Bank findBankByName(String bankName) {
 <b class="fc">&nbsp;        return bankRepository.findBankByBankName(bankName)</b>
 <b class="fc">&nbsp;                .orElseThrow(() -&gt; new BankNotFoundException(&quot;Bank with name &quot; + bankName + &quot; does not exists!&quot;));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Page&lt;Bank&gt; findAllBanksPage(int page) {
+&nbsp;        // pagination implementation - per page 10(n) banks and current page 0(page) - start page no is 0
+<b class="nc">&nbsp;        Pageable pageable = PageRequest.of(page, 10);</b>
+<b class="nc">&nbsp;        return this.bankRepository.findAll(pageable);</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @Override
@@ -165,7 +175,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-02 20:08</div>
+    <div style="float:right;">generated on 2025-02-03 10:55</div>
 </div>
 </body>
 </html>
