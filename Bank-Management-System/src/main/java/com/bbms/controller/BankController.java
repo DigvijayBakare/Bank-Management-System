@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,10 @@ public class BankController {
 
     @Autowired
     private BankServiceImpl bankService;
+
+    public BankController(BankServiceImpl bankService) {
+        this.bankService = bankService;
+    }
 
     // handler method to save the new bank
     @PostMapping("/add/bank")
@@ -38,24 +43,24 @@ public class BankController {
     public ResponseEntity<?> getAllBanks(){
         List<Bank> allBanks = this.bankService.findAllBanks();
         if(allBanks.isEmpty()) {
-            log.debug("No bank details found!");
-            return ResponseEntity.ok("No bank details are present!");
+            log.error("No bank details found!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No bank details are present!");
         }
         log.info("all bank details has been successfully fetched!");
         return ResponseEntity.status(HttpStatus.FOUND).body(allBanks);
     }
 
     // get all banks with pages only
-    @GetMapping("/get/bank/page/{pageNo}")
-    public ResponseEntity<?> getAllBanksPages(@PathVariable("pageNo") int pageNo){
-        Page<Bank> banks = this.bankService.findAllBanksPage(pageNo);
+    @GetMapping("/get/bank/page")
+    public ResponseEntity<?> getAllBanksPages(Pageable page){
+        Page<Bank> banks = this.bankService.findAllBanksPage(page);
 
         if(banks.isEmpty()) {
-            log.debug("No bank details found!");
-            return ResponseEntity.ok("No bank details are present on given page number!");
+            log.debug("No bank details found on desired page!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No bank details are present on given page number!");
         }
 
-        log.info("all bank details has been successfully fetched!");
+        log.info("all bank details on given page has been successfully fetched!");
         return ResponseEntity.status(HttpStatus.FOUND).body(banks);
     }
 
@@ -71,7 +76,7 @@ public class BankController {
     @GetMapping("/get/bank/{bankName}")
     public ResponseEntity<?> getSingleBank(@PathVariable("bankName")String bankName) {
         Bank bank = this.bankService.findBankByName(bankName);
-        log.info("bank with id: {} is found and returned!!", bankName);
+        log.info("bank with name: {} is found and returned!!", bankName);
         return ResponseEntity.status(HttpStatus.FOUND).body(bank);
     }
 

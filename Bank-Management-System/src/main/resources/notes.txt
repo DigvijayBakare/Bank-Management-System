@@ -1,0 +1,6 @@
+@PageableDefault(sort = "branchId",direction = Sort.Direction.ASC,size = 5) Pageable page
+    -> Override a defaults for pagination purpose
+
+@RequestParam(value = "pageNo",required = false, defaultValue = "0") int pageNo
+    -> Can also use the custom pagination but it does not provides much of the functionalities
+

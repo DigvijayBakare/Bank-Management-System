@@ -55,7 +55,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (1/1)
+    (3/3)
   </span>
 </td>
 <td class="coverageStat">
@@ -63,7 +63,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (1/1)
+    (3/3)
   </span>
 </td>
 </tr>
@@ -80,6 +80,12 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;public class BranchNotFoundException extends RuntimeException{
 &nbsp;    public BranchNotFoundException(String message){
 <b class="fc">&nbsp;        super(message);</b>
+&nbsp;    }
+&nbsp;    public BranchNotFoundException(String message, Long branchId) {
+<b class="fc">&nbsp;        super(message.replace(&quot;{branchId}&quot;, String.valueOf(branchId)));</b>
+&nbsp;    }
+&nbsp;    public BranchNotFoundException(String message, String branchName) {
+<b class="fc">&nbsp;        super(message.replace(&quot;{branchName}&quot;, String.valueOf(branchName)));</b>
 &nbsp;    }
 &nbsp;}
 </code>
@@ -105,7 +111,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-03 10:55</div>
+    <div style="float:right;">generated on 2025-02-05 00:02</div>
 </div>
 </body>
 </html>

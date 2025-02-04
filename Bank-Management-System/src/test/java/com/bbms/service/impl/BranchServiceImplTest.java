@@ -5,10 +5,13 @@ import com.bbms.entities.Branch;
 import com.bbms.repositories.BranchRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,47 +19,59 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class BranchServiceImplTest {
-    @Autowired
-    private BranchServiceImpl branchService;
-
     @Mock
     private BranchRepository branchRepository;
 
+    @Mock
+    private MessageSource messageSource;
+
+    @InjectMocks
+    private BranchServiceImpl branchService;
+
     List<Branch> branches;
+    Page<Branch> branchPages;
 
     Optional<Branch> branch = Optional.of(new Branch(1L, "Branch1", "IFSCCO12345", null, "Address1",
             "Address2", "City1", "MICR1Micr", 9586741230L, "branch1@gmail.com", 456321L));
 
-    private Long existingBranhId = 1L;
-    private Long nonExistingBranhId = 5L;
+    private Long existingBranchId = 1L;
+    private Long nonExistingBranchId = 10L;
     private Branch existingBranch;
     private Branch updateBranch;
+    private Long bankId = 1L;
+    private Pageable page;
 
 
     @BeforeEach
     void setUp() {
-        this.branchService = new BranchServiceImpl(this.branchRepository);
+        this.branchService = new BranchServiceImpl(this.branchRepository, this.messageSource);
         branches = Arrays.asList(
                 new Branch(1L, "Branch1", "IFSCCO12345", null, "Address1",
                         "Address2", "City1", "MICR1Micr", 9586741230L, "branch1@gmail.com", 456321L),
                 new Branch(2L, "Branch2", "IFSCC112345", null, "Address2",
                         "Address2", "City2", "MICR1Micr", 9586741230L, "branch1@gmail.com", 456321L)
         );
+        when(messageSource.getMessage(eq("ge.handleBranchWithIdNotFoundException"),
+                any(), any())).thenReturn("Branch with id " + nonExistingBranchId + " does not exist!");
 
-        Mockito.when(branchRepository.findById(1L)).thenReturn(branch);
-        Mockito.when(branchRepository.findBranchByBranchName("Branch1")).thenReturn(branch);
-        Mockito.when(branchRepository.findAll()).thenReturn(branches);
-        Mockito.when(branchRepository.save(branch.get())).thenReturn(branch.get());
+        when(branchRepository.findById(1L)).thenReturn(branch);
+        when(branchRepository.findBranchByBranchName("Branch1")).thenReturn(branch);
+        when(branchRepository.findAll()).thenReturn(branches);
+        when(branchRepository.save(branch.get())).thenReturn(branch.get());
 
         // create an existing branch object
-        existingBranch = new Branch(existingBranhId, "Old Branch", "IFSCCO12345", null, "Address1",
+        existingBranch = new Branch(existingBranchId, "Old Branch", "IFSCCO12345", null, "Address1",
                 "Address2", "City1", "MICR1Micr", 9586741230L, "oldbranch@gmail.com", 456321L);
 
-        updateBranch = new Branch(existingBranhId, "Old Branch", "IFSCCO12345", null, "Address1",
+        updateBranch = new Branch(existingBranchId, "Old Branch", "IFSCCO12345", null, "Address1",
                 "Address2", "City1", "MICR1Micr", 9586741230L, "oldbranch@gmail.com", 456321L);
+
+        when(branchService.findAllBranchesUsingPages(bankId,page)).thenReturn(branchPages);
     }
 
     @Test
@@ -65,11 +80,11 @@ class BranchServiceImplTest {
         assertEquals(branch.get(), branchById);
     }
 
-    /*@Test
+    @Test
     void findBranchByIdNotExists() {
         assertThrows(BranchNotFoundException.class,
                 () -> branchService.findBranchById(10L));
-    }*/
+    }
 
     @Test
     void findBranchByNameExists() {
@@ -79,8 +94,12 @@ class BranchServiceImplTest {
 
     @Test
     void findBranchByNameNotExists() {
+        String nonExistingBranchName = "Branch21";
+        when(this.messageSource.getMessage(eq("ge.handleBranchWithIdNotFoundException"),
+                any(), any())).thenReturn("Branch with id " + nonExistingBranchName + " does not exist!");
+
         assertThrows(BranchNotFoundException.class,
-                () -> branchService.findBranchByName("Branch21"));
+                () -> branchService.findBranchByName(nonExistingBranchName));
     }
 
     @Test
@@ -91,9 +110,18 @@ class BranchServiceImplTest {
 
     @Test
     void findAllBranchesNotFound() {
-        Mockito.when(branchService.findAllBranches()).thenReturn(new ArrayList<>());
+        when(branchService.findAllBranches()).thenReturn(new ArrayList<>());
+        when(this.messageSource.getMessage(eq("ge.handleBranchNotFoundException"),
+                any(), any())).thenReturn("Branch data does not exist!");
+
         assertThrows(BranchNotFoundException.class,
-                ()-> branchService.findAllBranches());
+                () -> branchService.findAllBranches());
+    }
+
+    @Test
+    void findBranchesWithBankIdAndPagination() {
+        Page<Branch> allBranchesUsingPages = branchService.findAllBranchesUsingPages(bankId, page);
+        assertEquals(branchPages,allBranchesUsingPages);
     }
 
     @Test
@@ -104,33 +132,42 @@ class BranchServiceImplTest {
 
     @Test
     void updateBranchIdIfExists() {
-        Mockito.when(branchRepository.findById(existingBranhId)).thenReturn(Optional.of(existingBranch));
-        branchService.updateBranch(updateBranch, existingBranhId);
+        when(branchRepository.findById(existingBranchId)).
+                thenReturn(Optional.of(existingBranch));
+        branchService.updateBranch(updateBranch, existingBranchId);
 
         Mockito.verify(branchRepository).save(existingBranch);
-        assertEquals(updateBranch.getBranchName(),existingBranch.getBranchName());
-        assertEquals(updateBranch.getIfscCode(),existingBranch.getIfscCode());
-        assertEquals(updateBranch.getBranchCity(),existingBranch.getBranchCity());
-        assertEquals(updateBranch.getBranchContact(),existingBranch.getBranchContact());
-        assertEquals(updateBranch.getBranchEmail(),existingBranch.getBranchEmail());
-        assertEquals(updateBranch.getBranchZip(),existingBranch.getBranchZip());
+        assertEquals(updateBranch.getBranchName(), existingBranch.getBranchName());
+        assertEquals(updateBranch.getIfscCode(), existingBranch.getIfscCode());
+        assertEquals(updateBranch.getBranchCity(), existingBranch.getBranchCity());
+        assertEquals(updateBranch.getBranchContact(), existingBranch.getBranchContact());
+        assertEquals(updateBranch.getBranchEmail(), existingBranch.getBranchEmail());
+        assertEquals(updateBranch.getBranchZip(), existingBranch.getBranchZip());
     }
 
     @Test
     void updateBranchIdIfNotExists() {
-        Mockito.when(branchRepository.findById(nonExistingBranhId)).thenReturn(Optional.empty());
+        when(branchRepository.findById(nonExistingBranchId))
+                .thenReturn(Optional.empty());
+
+        when(this.messageSource.getMessage(eq("ge.handleBranchWithIdNotFoundException"),
+                any(), any())).thenReturn("Branch with id " + nonExistingBranchId + " does not exist!");
+
         assertThrows(BranchNotFoundException.class,
-                () -> branchService.updateBranch(updateBranch, nonExistingBranhId));
+                () -> branchService.updateBranch(updateBranch, nonExistingBranchId));
     }
 
     @Test
     void deleteBranchWhenBankExists() {
-        branchService.deleteBranch(existingBranhId);
+        branchService.deleteBranch(existingBranchId);
     }
 
     @Test
     void deleteBranchWhenBankNotExists() {
+        when(this.messageSource.getMessage(eq("ge.handleBranchWithIdNotFoundException"),
+                any(), any())).thenReturn("Branch with id " + nonExistingBranchId + " does not exist!");
+
         assertThrows(BranchNotFoundException.class,
-                () -> branchService.deleteBranch(nonExistingBranhId));
+                () -> branchService.deleteBranch(nonExistingBranchId));
     }
 }

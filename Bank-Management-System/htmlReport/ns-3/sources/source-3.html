@@ -75,7 +75,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (12/12)
+    (11/11)
   </span>
 </td>
 </tr>
@@ -121,15 +121,14 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;    @ExceptionHandler(value = BankNotFoundException.class)
 &nbsp;    public ResponseEntity&lt;?&gt; handleBankNotFoundException(BankNotFoundException bnf) {
-<b class="fc">&nbsp;        String message = bnf.getMessage();</b>
 <b class="fc">&nbsp;        logger.error(&quot;bank is not found in the record!!&quot;);</b>
-<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;bank not found in the record!!\n&quot; + message);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(bnf.getMessage());</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @ExceptionHandler(value = BranchNotFoundException.class)
 &nbsp;    public ResponseEntity&lt;String&gt; handleBranchNotFoundException(BranchNotFoundException bnf){
 <b class="fc">&nbsp;        logger.error(&quot;branch is not present in the record!!!&quot;);</b>
-<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Branch is not found in records!!\n&quot; + bnf.getMessage());</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(bnf.getMessage());</b>
 &nbsp;    }
 &nbsp;}
 &nbsp;
@@ -156,7 +155,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-03 10:55</div>
+    <div style="float:right;">generated on 2025-02-05 00:02</div>
 </div>
 </body>
 </html>

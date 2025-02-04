@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,10 @@ public class BranchController {
 
     @Autowired
     private BranchServiceImpl branchServiceImp;
+
+    public BranchController(BranchServiceImpl branchServiceImp) {
+        this.branchServiceImp = branchServiceImp;
+    }
 
     // handler method for saving the new branch
     @PostMapping("/add/branch")
@@ -39,7 +44,7 @@ public class BranchController {
     @GetMapping("/get/branch-id/{branchId}")
     public ResponseEntity<?> getBranchById(@PathVariable("branchId") Long branchId) {
         Branch branchById = this.branchServiceImp.findBranchById(branchId);
-        logger.info("Fetched branch: {}", branchById);
+        logger.info("Fetched branch with id: {}", branchById);
         return ResponseEntity.ok(branchById);
 
     }
@@ -48,7 +53,7 @@ public class BranchController {
     @GetMapping("/get/branch/{name}")
     public ResponseEntity<?> getBranchByName(@Valid @PathVariable("name") String branchName) {
         Branch branchByName = this.branchServiceImp.findBranchByName(branchName);
-        logger.info("Fetched branch: {}", branchByName);
+        logger.info("Fetched branch with name: {}", branchByName);
         return ResponseEntity.ok(branchByName);
     }
 
@@ -56,18 +61,22 @@ public class BranchController {
     @GetMapping("/get")
     public ResponseEntity<?> getAllBranches() {
         List<Branch> allBranches = this.branchServiceImp.findAllBranches();
+        if (allBranches.isEmpty()) {
+            logger.info("No branches found!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Data does not exists!");
+        }
         logger.info("fetched all branches successfully: {}", allBranches);
         return ResponseEntity.status(HttpStatus.FOUND).body(allBranches);
     }
 
     // get all branch according to the pagination
-    @GetMapping("/get/page/{pageNo}")
-    public ResponseEntity<?> getAllBranchesUsingPages(@PathVariable("pageNo") int pageNo) {
-        Page<Branch> pageBranches = this.branchServiceImp.findAllBranchesUsingPages(pageNo);
+    @GetMapping("/get/page/{bankId}/branches")
+    public ResponseEntity<?> getAllBranchesUsingPages(@PathVariable("bankId")Long bankId, Pageable page) {
+        Page<Branch> pageBranches = this.branchServiceImp.findAllBranchesUsingPages(bankId,page);
 
         if (pageBranches.isEmpty()){
             logger.info("No data found on the given page!");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Data does not exists on the given page no!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Data does not exists!");
         }
 
         logger.info("fetched branches on the given page successfully: {}", pageBranches);

@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > BankService</title>
+  <title>Coverage Report > BranchService</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">com.bbms.service</a>
 </div>
 
-<h1>Coverage Summary for Class: BankService (com.bbms.service)</h1>
+<h1>Coverage Summary for Class: BranchService (com.bbms.service)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">BankService</td>
+  <td class="name">BranchService</td>
 </tr>
 
 </table>
@@ -41,19 +41,20 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package com.bbms.service;
 &nbsp;
-&nbsp;import com.bbms.entities.Bank;
+&nbsp;import com.bbms.entities.Branch;
 &nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
 &nbsp;
 &nbsp;import java.util.List;
 &nbsp;
-&nbsp;public interface BankService {
-&nbsp;    public Bank findBankById(Long bankId);
-&nbsp;    public Bank findBankByName(String bankName);
-&nbsp;    public List&lt;Bank&gt; findAllBanks();
-&nbsp;    public Page&lt;Bank&gt; findAllBanksPage(int page);
-&nbsp;    public Bank saveBank(Bank newBank);
-&nbsp;    public Bank updateBank(Long bankId, Bank updateBank );
-&nbsp;    public void deleteBank(Long bankId);
+&nbsp;public interface BranchService {
+&nbsp;    public Branch findBranchById(Long branchId);
+&nbsp;    public Branch findBranchByName(String branchName);
+&nbsp;    public List&lt;Branch&gt; findAllBranches();
+&nbsp;    public Page&lt;Branch&gt; findAllBranchesUsingPages(Long bankId, Pageable page);
+&nbsp;    public Branch saveBranch(Branch newBranch);
+&nbsp;    public Branch updateBranch(Branch updateBranch,Long branchId);
+&nbsp;    public void deleteBranch(Long branchId);
 &nbsp;}
 </code>
 </pre>
@@ -78,7 +79,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-03 10:55</div>
+    <div style="float:right;">generated on 2025-02-05 00:02</div>
 </div>
 </body>
 </html>

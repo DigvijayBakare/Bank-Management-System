@@ -55,7 +55,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (1/1)
+    (3/3)
   </span>
 </td>
 <td class="coverageStat">
@@ -63,7 +63,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (1/1)
+    (3/3)
   </span>
 </td>
 </tr>
@@ -80,6 +80,14 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;public class BankNotFoundException extends RuntimeException {
 &nbsp;    public BankNotFoundException(String message) {
 <b class="fc">&nbsp;        super(message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public BankNotFoundException(String message, Long bankId) {
+<b class="fc">&nbsp;        super(message.replace(&quot;{bankId}&quot;, String.valueOf(bankId)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public BankNotFoundException(String message, String bankName) {
+<b class="fc">&nbsp;        super(message.replace(&quot;{bankName}&quot;, String.valueOf(bankName)));</b>
 &nbsp;    }
 &nbsp;}
 </code>
@@ -105,7 +113,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-03 10:55</div>
+    <div style="float:right;">generated on 2025-02-05 00:02</div>
 </div>
 </body>
 </html>

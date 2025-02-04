@@ -32,9 +32,8 @@ public class ExceptionHandlerHelper {
 
     @ExceptionHandler(value = BankNotFoundException.class)
     public ResponseEntity<?> handleBankNotFoundException(BankNotFoundException bnf) {
-        String message = bnf.getMessage();
         logger.error("bank is not found in the record!!");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("bank not found in the record!!\n" + message);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(bnf.getMessage());
     }
 
     @ExceptionHandler(value = BranchNotFoundException.class)

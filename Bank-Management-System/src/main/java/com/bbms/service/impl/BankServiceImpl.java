@@ -5,9 +5,12 @@ import com.bbms.entities.Bank;
 import com.bbms.repositories.BankRepository;
 import com.bbms.service.BankService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -15,35 +18,57 @@ import java.util.List;
 
 @Service
 public class BankServiceImpl implements BankService {
+    private static final Logger logger = LoggerFactory.getLogger(BranchServiceImpl.class);
+
     @Autowired
     private BankRepository bankRepository;
 
-    public BankServiceImpl(BankRepository bankRepository) {
+    @Autowired
+    private MessageSource messageSource;
+
+    public BankServiceImpl(BankRepository bankRepository, MessageSource messageSource) {
         this.bankRepository = bankRepository;
+        this.messageSource = messageSource;
     }
 
     @Override
     public Bank findBankById(Long bankId) {
         return bankRepository.findById(bankId)
-                .orElseThrow(() -> new BankNotFoundException("Bank with id " + bankId + " does not exists!"));
+                .orElseThrow(() -> new BankNotFoundException(
+                        messageSource.getMessage("ge.handleBankWithIdNotFoundException",
+                                new Object[]{bankId}, LocaleContextHolder.getLocale())));
     }
 
     @Override
     public Bank findBankByName(String bankName) {
         return bankRepository.findBankByBankName(bankName)
-                .orElseThrow(() -> new BankNotFoundException("Bank with name " + bankName + " does not exists!"));
+                .orElseThrow(() -> new BankNotFoundException(
+                        messageSource.getMessage("ge.handleBankWithNameNotFoundException",
+                                new Object[]{bankName}, LocaleContextHolder.getLocale())));
     }
 
     @Override
-    public Page<Bank> findAllBanksPage(int page) {
-        // pagination implementation - per page 10(n) banks and current page 0(page) - start page no is 0
-        Pageable pageable = PageRequest.of(page, 10);
-        return this.bankRepository.findAll(pageable);
+    public Page<Bank> findAllBanksPage(Pageable page) {
+        Page<Bank> bankPage = this.bankRepository.findAll(page);
+        if (bankPage.isEmpty()) {
+            logger.error("No bank details found on desired page!!");
+            throw new BankNotFoundException(messageSource.getMessage("ge.handleBankPageNotFoundException",
+                    null, LocaleContextHolder.getLocale()));
+        }
+        logger.info("Page returned successfully!");
+        return bankPage;
     }
 
     @Override
     public List<Bank> findAllBanks() {
-        return bankRepository.findAll();
+        List<Bank> bankList = bankRepository.findAll();
+        if (bankList.isEmpty()) {
+            logger.error("No data available!");
+            throw new BankNotFoundException(messageSource.getMessage("ge.handleBankNotFoundException",
+                    null, LocaleContextHolder.getLocale()));
+        }
+        logger.info("List of all banks returned successfully!");
+        return bankList;
     }
 
     @Override
@@ -54,7 +79,9 @@ public class BankServiceImpl implements BankService {
     @Override
     public Bank updateBank(Long bankId, @Valid Bank updateBank) {
         Bank bank = bankRepository.findById(bankId).
-                orElseThrow(() -> new BankNotFoundException("Bank with id: " + bankId + " not found!!"));
+                orElseThrow(() -> new BankNotFoundException(
+                        messageSource.getMessage("ge.handleBankWithIdNotFoundException",
+                                new Object[]{bankId}, LocaleContextHolder.getLocale())));
 
         bank.setBankId(bankId);
         bank.setBankContact(updateBank.getBankContact());
@@ -71,7 +98,9 @@ public class BankServiceImpl implements BankService {
     @Override
     public void deleteBank(Long bankId) {
         bankRepository.findById(bankId).orElseThrow(() ->
-                new BankNotFoundException("Bank with id: " + bankId + " not found!"));
+                new BankNotFoundException(
+                        messageSource.getMessage("ge.handleBankWithIdNotFoundException",
+                                new Object[]{bankId}, LocaleContextHolder.getLocale())));
         bankRepository.deleteById(bankId);
     }
 }

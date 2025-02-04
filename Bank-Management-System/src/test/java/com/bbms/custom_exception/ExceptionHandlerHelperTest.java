@@ -61,7 +61,7 @@ class ExceptionHandlerHelperTest {
 
         // Assert the response
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        assertEquals("bank not found in the record!!\n" + errorMessage, responseEntity.getBody());
+        assertEquals(errorMessage, responseEntity.getBody());
     }
 
     @Test

@@ -4,13 +4,21 @@ import com.bbms.entities.Bank;
 import com.bbms.service.impl.BankServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.exception.ConstraintViolationException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -48,8 +56,14 @@ class BankControllerTest {
 
     Optional<Bank> bank = Optional.of(new Bank(1L, "Bank1", new Date(), "1236547890", "bank1@gmail.com", true, null));
 
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
     void saveBank() throws Exception {
+//        this.bankController=new BankController(this.bankService);
         when(bankService.saveBank(any(Bank.class))).thenReturn(bank.get());
 
         mockMvc.perform(post("/api/bank/add/bank")
@@ -88,19 +102,37 @@ class BankControllerTest {
                 .andDo(print());
     }
 
-//    @Test
-    void getAllBanksIfErrorInValidation() {
-        List<ObjectError> errors = new ArrayList<>();
-        ObjectError error = new ObjectError("bank", "No banks found!");
-        errors.add(error);
-        when(result.hasErrors()).thenReturn(true);
-        when(result.getAllErrors()).thenReturn(errors);
+    @Test
+    void getAllBanksNoBanksFound() {
+        when(bankService.findAllBanks()).thenReturn(Collections.emptyList());
+        ResponseEntity<?> response = bankController.getAllBanks();
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("No bank details are present!", response.getBody());
+    }
+    @Test
+    void getAllBanksPagesNoBanksFound() {
+        Pageable pageable = PageRequest.of(0, 10); // Page 0 with size 10
+        Page<Bank> emptyPage = new PageImpl<>(List.of()); // Empty page
+        when(bankService.findAllBanksPage(pageable)).thenReturn(emptyPage);
+        ResponseEntity<?> response = bankController.getAllBanksPages(pageable);
 
-        when(bankController.getAllBanks())
-                .thenThrow(new ConstraintViolationException("Validation failed!",null,"Not Found!"));
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("No bank details are present on given page number!", response.getBody());
+    }
 
-        assertThrows(ConstraintViolationException.class,
-                ()-> bankController.getAllBanks());
+    @Test
+    void testGetAllBanksPages_BanksFound() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        List<Bank> mockBanks = List.of(new Bank(1L, "Bank1", new Date(), "1236547890", "bank1@gmail.com", true, null),
+                new Bank(2L, "Bank2", new Date(), "0987654321", "bank2@gmail.com", true, null));
+        Page<Bank> bankPage = new PageImpl<>(mockBanks, pageable, mockBanks.size());
+        when(bankService.findAllBanksPage(pageable)).thenReturn(bankPage);
+
+        ResponseEntity<?> response = bankController.getAllBanksPages(pageable);
+
+        assertEquals(HttpStatus.FOUND, response.getStatusCode());
+        assertEquals(bankPage, response.getBody());
     }
 
     @Test
